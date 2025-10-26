@@ -9390,6 +9390,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@strapi/plugin-audit-log@workspace:packages/plugins/audit-log":
+  version: 0.0.0-use.local
+  resolution: "@strapi/plugin-audit-log@workspace:packages/plugins/audit-log"
+  dependencies:
+    "@strapi/strapi": "npm:5.29.0"
+    "@strapi/types": "npm:5.29.0"
+    "@types/node": "npm:20.11.30"
+  peerDependencies:
+    "@strapi/strapi": ^5.0.0
+  languageName: unknown
+  linkType: soft
+
 "@strapi/plugin-cloud@workspace:packages/plugins/cloud":
   version: 0.0.0-use.local
   resolution: "@strapi/plugin-cloud@workspace:packages/plugins/cloud"
@@ -11409,6 +11421,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c0/2c26e57002f4d77494fcc156ec188b345b8a8f987b9beffae7c17197690e7ec1cd5c67a5902514fe906b91514c0958dddb4bed54d888bd911d10be7c9ed8ed93
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:20.11.30":
+  version: 20.11.30
+  resolution: "@types/node@npm:20.11.30"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c0/867cfaf969c6d8850d8d7304e7ab739898a50ecb1395b61ff2335644f5f48d7a46fbc4a14cee967aed65ec134b61a746edae70d1f32f11321ccf29165e3bc4e6
   languageName: node
   linkType: hard
 

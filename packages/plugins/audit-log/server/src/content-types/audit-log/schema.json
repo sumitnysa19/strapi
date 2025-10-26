@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "audit_logs",
+  "info": {
+    "singularName": "audit-log",
+    "pluralName": "audit-logs",
+    "displayName": "Audit Log",
+    "description": "Stores audit trail for all content operations"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "timestamps": true,
+    "comment": "Audit log entries are immutable and should not be modified after creation"
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": false
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "contentType": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "minLength": 1
+    },
+    "recordId": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255,
+      "minLength": 1
+    },
+    "action": {
+      "type": "enumeration",
+      "enum": ["create", "update", "delete"],
+      "required": true
+    },
+    "timestamp": {
+      "type": "datetime",
+      "required": true
+    },
+    "userId": {
+      "type": "integer",
+      "min": 1
+    },
+    "userEmail": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "payload": {
+      "type": "json",
+      "required": true
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}
