@@ -606,66 +606,131 @@ The plugin implements the following functional requirements:
 ```plantuml
 @startuml
 !theme plain
-skinparam backgroundColor white
+skinparam backgroundColor #FAFAFA
 skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam roundcorner 10
 
-actor "Client" as client
-rectangle "Content API Request" as request #LightBlue
+' Color scheme
+skinparam rectangle {
+  BackgroundColor<<client>> #E3F2FD
+  BorderColor<<client>> #1976D2
+  BackgroundColor<<core>> #E8F5E9
+  BorderColor<<core>> #388E3C
+  BackgroundColor<<plugin>> #FFF3E0
+  BorderColor<<plugin>> #F57C00
+  BackgroundColor<<critical>> #FFEBEE
+  BorderColor<<critical>> #D32F2F
+  BackgroundColor<<step>> #FFFDE7
+  BorderColor<<step>> #F9A825
+}
 
-package "Strapi Core" {
-  rectangle "Document Service\nMiddleware" as middleware #LightGreen
-  rectangle "Lifecycle Hooks" as hooks #LightGreen {
-    note right
-      • beforeCreate / afterCreate
-      • beforeUpdate / afterUpdate
-      • beforeDelete / afterDelete
+skinparam note {
+  BackgroundColor #FFFEF7
+  BorderColor #9E9E9E
+  FontSize 11
+}
+
+skinparam database {
+  BackgroundColor #F3E5F5
+  BorderColor #7B1FA2
+}
+
+' Actors and Entry Point
+actor "👤 Client" as client #E3F2FD
+rectangle "**Content API Request**" as request <<client>> {
+  note right
+    POST/PUT/DELETE
+    /api/content
+  end note
+}
+
+' Strapi Core
+package "🎯 **Strapi Core**" <<core>> {
+  rectangle "**Document Service**\n**Middleware**" as middleware <<core>>
+  rectangle "**Lifecycle Hooks**" as hooks <<core>> {
+    note left
+      ✓ beforeCreate / afterCreate
+      ✓ beforeUpdate / afterUpdate
+      ✓ beforeDelete / afterDelete
     end note
   }
 }
 
-package "Audit Log Plugin" {
-  rectangle "Audit Service" as service #LightYellow {
-    rectangle "1. Validate Config" as step1
-    rectangle "2. Circuit Breaker" as step2
-    rectangle "3. Build Entry" as step3
-    rectangle "4. Retry Logic" as step4
-    rectangle "5. Queue Fallback" as step5
+' Audit Log Plugin
+package "📝 **Audit Log Plugin**" <<plugin>> {
+  rectangle "**Audit Service**" as service <<plugin>> {
+    rectangle "**1.** Validate Config" as step1 <<step>>
+    rectangle "**2.** Circuit Breaker" as step2 <<step>>
+    rectangle "**3.** Build Entry" as step3 <<step>>
+    rectangle "**4.** Retry Logic" as step4 <<step>>
+    rectangle "**5.** Queue Fallback" as step5 <<step>>
   }
   
-  rectangle "Circuit Breaker" as cb #Orange
-  rectangle "Retry Handler" as retry #Orange
-  rectangle "Fallback Queue" as queue #Orange
+  rectangle "⚡ **Circuit Breaker**" as cb <<critical>>
+  rectangle "🔄 **Retry Handler**" as retry <<critical>>
+  rectangle "📮 **Fallback Queue**" as queue <<critical>>
 }
 
-database "Audit Logs DB" as db {
-  rectangle "audit_logs table" as table
-  note right
-    Indexes:
-    • contentType
-    • userId
-    • action
-    • timestamp
+' Database
+database "💾 **Audit Logs DB**" as db {
+  rectangle "audit_logs" as table #E1BEE7
+  note bottom
+    **Optimized Indexes:**
+    • contentType (composite)
+    • userId + timestamp
+    • action + timestamp
+    • timestamp (DESC)
   end note
 }
 
-client --> request
-request --> middleware
-middleware --> hooks
-hooks -down-> service : async, non-blocking
-service --> step1
-step1 --> step2
-step2 --> step3
-step3 --> step4
-step4 --> step5
-step2 ..> cb : uses
-step4 ..> retry : uses
-step5 ..> queue : uses
-service --> db : write audit entry
+' Connections
+client -right-> request : "HTTP\nRequest"
+request -right-> middleware : "process"
+middleware -down-> hooks : "trigger"
+hooks -down-> service : "**async**\n**non-blocking**" #Green
 
-note right of service
-  All errors caught
-  Never blocks content ops
+' Service flow
+service -down-> step1
+step1 -down-> step2
+step2 -down-> step3
+step3 -down-> step4
+step4 -down-> step5
+
+' Dependencies
+step2 .right.> cb : "<<uses>>" #Orange
+step4 .right.> retry : "<<uses>>" #Orange
+step5 .right.> queue : "<<uses>>" #Orange
+
+' Database write
+service -right-> db : "**write audit**\n**entry**" #Purple
+
+' Important notes
+note left of service #FFEBEE
+  ⚠️ **Error Handling**
+  • All errors caught
+  • Never blocks content ops
+  • Graceful degradation
+  • Silent failures logged
 end note
+
+note bottom of db #E8F5E9
+  ✅ **Performance Features**
+  • Write-optimized
+  • Async operations
+  • Batch processing
+  • Auto-archival
+end note
+
+legend bottom
+  |= Color |= Component Type |
+  | <#E3F2FD> | Client Layer |
+  | <#E8F5E9> | Strapi Core |
+  | <#FFF3E0> | Audit Plugin |
+  | <#FFEBEE> | Critical Components |
+  | <#FFFDE7> | Processing Steps |
+  | <#F3E5F5> | Database |
+endlegend
 
 @enduml
 ```
